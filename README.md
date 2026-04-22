@@ -1,18 +1,63 @@
-# Salesforce DX Project: Next Steps
+# AcmeProject
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+## 1. Resumen del Proyecto y Supuestos
 
-## How Do You Plan to Deploy Your Changes?
+He desarrollado un sistema de gestión de contratos para consultores dentro de Salesforce para optimizar el ciclo de vida de los "Engagements".
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+### Supuestos
 
-## Configure Your Salesforce DX Project
+- La etapa "Negotiation/Review" es el disparador principal para la preparación de propuestas.
+- El término "Días hábiles" excluye sábados y domingos para el cálculo de fechas de vencimiento.
+- Se utilizan Page Layouts estándar para la visualización inicial de los componentes.
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+## 2. Implementación Funcional y Pruebas (#3-#8)
 
-## Read All About It
+### #3 Objeto Personalizado y #4 Campos
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+Se creó el objeto `Engagement__c` con relaciones (Lookups) a `Account` y `Opportunity`, y campos de negocio como estado, presupuesto y fechas.
+
+Prueba:
+
+Crear un registro de Engagement y verificar que todos los campos estén disponibles y operativos.
+
+### #5 Vista de Lista (List View)
+
+Se configuró la vista `Recent Engagements` con un gráfico de dona agrupado por estado.
+
+Prueba:
+
+Ir a la pestaña Engagements y seleccionar la vista `Recent Engagements`.
+
+### #6 LWC y Apex
+
+Se desarrolló el componente `engagementSummary` y la clase `EngagementController`.
+
+Prueba:
+
+Abrir un registro de Engagement. Verificar el monto de la oportunidad y los contadores de actividad. Hacer clic en `Quick Follow-Up Call` para generar una tarea para el día siguiente.
+
+### #7 Flujo de Automatización (Flow)
+
+Flow activado por registro en `Opportunity`.
+
+Prueba:
+
+Cambiar la etapa de una oportunidad a `Negotiation/Review`. Revisar el Engagement relacionado para confirmar la creación de la tarea `Prepare proposal` con vencimiento `Hoy + 2 días hábiles`.
+
+### #8 Reportes
+
+Se creó el `Report Type` `Engagements with Opportunities` y el reporte `Engagement Pipeline`.
+
+Prueba:
+
+Abrir el reporte `Engagement Pipeline` para visualizar el gráfico de barras y el resumen financiero.
+
+## 3. Activos Técnicos (Rutas de Código Fuente)
+
+- Apex Controller: `force-app/main/default/classes/EngagementController.cls`
+- Apex Metadata: `force-app/main/default/classes/EngagementController.cls-meta.xml`
+- LWC Bundle: `force-app/main/default/lwc/engagementSummary/`
+- `engagementSummary.html`
+- `engagementSummary.js`
+- `engagementSummary.js-meta.xml`
+- LWC Test: `force-app/main/default/lwc/engagementSummary/__tests__/engagementSummary.test.js`
